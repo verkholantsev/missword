@@ -62,5 +62,6 @@
 
 	Missword.prototype.keys = function () {
 		return this.storage.keys();
-	}
+	};
 })(window, CryptoJS);
+
