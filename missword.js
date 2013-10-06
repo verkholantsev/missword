@@ -1,67 +1,70 @@
-(function (window, CryptoJS, undefined) {
-	var _Local = function () {
-		this.storage = window.localStorage;
-	};
+/*jslint nomen: true */
+/*global window: false, CryptoJS: false, jQuery: false, _: false */
+(function (window, CryptoJS, $, _) {
+    'use strict';
 
-	_Local.prototype.add = function (hash, url) {
-		this.storage.setItem(url, hash);
-	};
+    window.missword = window.missword || {};
+    var missword = window.missword;
 
-	_Local.prototype.get = function (url) {
-		return this.storage.getItem(url);
-	};
+    missword.Local = function () {
+        this.storage = window.localStorage;
+    };
 
-	_Local.prototype.keys = function () {
-		return Object.keys(window.localStorage);
-	};
+    missword.Local.prototype.add = function (hash, url) {
+        this.storage.setItem(url, hash);
+    };
 
+    missword.Local.prototype.get = function (url) {
+        return this.storage.getItem(url);
+    };
 
-	_View = function (settings) {
-		this.model = settings.model;
-		this.container = settings.container;
+    missword.Local.prototype.keys = function () {
+        return Object.keys(window.localStorage);
+    };
 
-		this.render();
-	};
+    missword.View = function (settings) {
+        this.model = settings.model;
+        this.container = settings.container;
 
-	_View.prototype.render = function () {
-		if (this.container) {
-			var keys = this.model.keys();
-			var _this = this;
-			keys.forEach(function (key) {
-				_this.container.append(
-					'<div class="pass">' +
-						'<span>' + key + '</span>' +
-						'<input value=' + _this.model.get(key) + '>' +
-					'</div>'
-				);
-			});
-		}
-	};
+        this.render();
+    };
 
-	var Missword = window.Missword = function (settings) {
-		this.master = settings.master;
-		this.storage = new _Local();
-		this.view = new _View({
-			container: settings.container,
-			model: this
-		});
-	};
+    missword.View.prototype.render = function () {
+        if (this.container) {
+            var template = _.template($('#url-pass-template').html()),
+                keys = this.model.keys(),
+                _this = this;
 
-	Missword.prototype.add = function (password, url) {
-		var str = url + password;
-		this.storage.add(CryptoJS.AES.encrypt(str, this.master).toString(), url);
-	};
+            keys.forEach(function (key) {
+                _this.container.append(template({url: key, password: _this.model.get(key)}));
+            });
+        }
+    };
 
-	Missword.prototype.get = function (url) {
-		var pass = CryptoJS.AES.decrypt(this.storage.get(url), this.master)
-			.toString(CryptoJS.enc.Utf8)
-			.slice(url.length);
+    missword.Model = function (settings) {
+        this.master = settings.master;
+        this.storage = new missword.Local();
+        this.view = new missword.View({
+            container: settings.container,
+            model: this
+        });
+    };
 
-		return pass;
-	};
+    missword.Model.prototype.add = function (password, url) {
+        var str = url + password;
+        this.storage.add(CryptoJS.AES.encrypt(str, this.master).toString(), url);
+    };
 
-	Missword.prototype.keys = function () {
-		return this.storage.keys();
-	};
-})(window, CryptoJS);
+    missword.Model.prototype.get = function (url) {
+        var pass = CryptoJS.AES.decrypt(this.storage.get(url), this.master)
+            .toString(CryptoJS.enc.Utf8)
+            .slice(url.length);
+
+        return pass;
+    };
+
+    missword.Model.prototype.keys = function () {
+        return this.storage.keys();
+    };
+}(window, CryptoJS, jQuery, _));
 
