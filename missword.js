@@ -3,8 +3,7 @@
 (function (window, CryptoJS, $, _) {
     'use strict';
 
-    window.missword = window.missword || {};
-    var missword = window.missword;
+    var missword = {};
 
     missword.Local = function () {
         this.storage = window.localStorage;
@@ -23,10 +22,11 @@
     };
 
     missword.View = function (settings) {
-        this.model = settings.model;
         this.container = settings.container;
+    };
 
-        this.render();
+    missword.View.prototype.setModel = function (model) {
+        this.model = model;
     };
 
     missword.View.prototype.render = function () {
@@ -44,10 +44,10 @@
     missword.Model = function (settings) {
         this.master = settings.master;
         this.storage = new missword.Local();
-        this.view = new missword.View({
-            container: settings.container,
-            model: this
-        });
+    };
+
+    missword.Model.prototype.setView = function (view) {
+        this.view = view;
     };
 
     missword.Model.prototype.add = function (password, url) {
@@ -66,5 +66,16 @@
     missword.Model.prototype.keys = function () {
         return this.storage.keys();
     };
+
+    missword.Controller = function (settings) {
+        this.model = new missword.Model(settings.model);
+        this.view = new missword.View(settings.view);
+        this.model.setView(this.view);
+        this.view.setModel(this.model);
+
+        this.view.render();
+    };
+
+    window.Missword = missword.Controller;
 }(window, CryptoJS, jQuery, _));
 
