@@ -1,6 +1,5 @@
 /*jslint nomen: true */
-/*global window: false, CryptoJS: false, jQuery: false, _: false */
-(function (window, CryptoJS, $, _) {
+(function (window, CryptoJS, $, _, Backbone) {
     'use strict';
 
     var missword = {};
@@ -21,61 +20,105 @@
         return Object.keys(window.localStorage);
     };
 
-    missword.View = function (settings) {
-        this.container = settings.container;
-    };
+    var local = new missword.Local();
 
-    missword.View.prototype.setModel = function (model) {
-        this.model = model;
-    };
+    Backbone.sync = function (method, model, options) {
+        var methods = {
+            'create': function (model, options) {
+                var key = CryptoJS.AES.encrypt(model.get('url'), options.master).toString(),
+                    value = CryptoJS.AES.encrypt(JSON.stringify(model), options.master).toString();
 
-    missword.View.prototype.render = function () {
-        if (this.container) {
-            var template = _.template($('#url-pass-template').html()),
-                keys = this.model.keys(),
-                _this = this;
+                local.add(value, key);
 
-            keys.forEach(function (key) {
-                _this.container.append(template({url: key, password: _this.model.get(key)}));
-            });
+                if (options.success) {
+                    options.success.apply(this);
+                }
+            },
+            'read': function (model, options) {
+                var entries = local.keys().reduce(function (result, key) {
+                    var entry = local.get(key);
+                    entry = 
+                        CryptoJS.AES.decrypt(entry, options.master)
+                        .toString(CryptoJS.enc.Utf8);
+
+                    result.push(JSON.parse(entry));
+                    return result;
+                }, []);
+
+                if (options.success) {
+                    options.success.apply(this, [entries]);
+                }
+            }
         }
+
+        return methods[method].apply(this, [model, options]);
     };
 
-    missword.Model = function (settings) {
-        this.master = settings.master;
-        this.storage = new missword.Local();
-    };
+    var EntryView = Backbone.View.extend({
+        initialize: function (settings) {
+            this.template = settings.template;
+            this.listenTo(this.model, 'change', this.render);
+        },
 
-    missword.Model.prototype.setView = function (view) {
-        this.view = view;
-    };
+        render: function () {
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        }
+    });
 
-    missword.Model.prototype.add = function (password, url) {
-        var str = url + password;
-        this.storage.add(CryptoJS.AES.encrypt(str, this.master).toString(), url);
-    };
+    var Entry = Backbone.Model.extend({
+        defaults: {
+            url: '',
+            pass: ''
+        }
+    });
 
-    missword.Model.prototype.get = function (url) {
-        var pass = CryptoJS.AES.decrypt(this.storage.get(url), this.master)
-            .toString(CryptoJS.enc.Utf8)
-            .slice(url.length);
+    var Entries = Backbone.Collection.extend({
+        model: Entry,
 
-        return pass;
-    };
+        initialize: function (settings) {
+            this.master = settings.master;
+        },
 
-    missword.Model.prototype.keys = function () {
-        return this.storage.keys();
-    };
+        create: function (model, options) {
+            options = _.defaults(options || {}, {master: this.master});
+            return Backbone.Collection.prototype.create.apply(this, [model, options]);
+        },
+
+        fetch: function (options) {
+            options = _.defaults(options || {}, {master: this.master});
+            return Backbone.Collection.prototype.fetch.apply(this, [options]);
+        }
+    });
+
+    missword.View = Backbone.View.extend({
+        initialize: function (settings) {
+            this.entryTemplate = settings.entryTemplate;
+            this.container = settings.container;
+
+            this.entries = new Entries({master: settings.master});
+            this.listenTo(this.entries, 'add', this.onEntryAdded);
+            this.entries.fetch();
+        },
+
+        render: function () {
+            $(this.container).html(this.el);
+        },
+
+        onEntryAdded: function (entry) {
+            var view = new EntryView({model: entry, template: _.template(this.entryTemplate.html())});
+            this.$el.append(view.render().el);
+        }
+    });
 
     missword.Controller = function (settings) {
-        this.model = new missword.Model(settings.model);
         this.view = new missword.View(settings.view);
-        this.model.setView(this.view);
-        this.view.setModel(this.model);
-
         this.view.render();
+
+        return this.view.entries;
     };
 
     window.Missword = missword.Controller;
-}(window, CryptoJS, jQuery, _));
+
+}(window, CryptoJS, jQuery, _, Backbone));
 
