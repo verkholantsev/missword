@@ -7,13 +7,28 @@
 	<title>missword</title>
 </head>
 <body>
-
+	<div id="missword-container"></div>
 
 	<script type="text/template" id="url-pass-template">
 		<div class="pass">
 				<span><%= url %></span>
 			<input value=<%= pass %>>
 		</div>
-	</script>	
+	</script>
+	<script type="text/template" id="missword-template">
+		<div class="entries">
+		</div>
+		<div class="new-entry">
+			<div class="url-input">
+				<div class="label">url</div>
+				<input type="text" name="url">
+			</div>
+			<div class="pass-input">
+				<div class="label">pass</div>
+				<input type="text" name="pass">
+			</div>
+		</div>
+		<div class="add-button">+</div>
+	</script>
 </body>
 </html>

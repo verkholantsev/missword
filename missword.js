@@ -1,4 +1,5 @@
 /*jslint nomen: true */
+/*global window: false, CryptoJS: false, jQuery: false, _: false, Backbone */
 (function (window, CryptoJS, $, _, Backbone) {
     'use strict';
 
@@ -37,7 +38,7 @@
             'read': function (model, options) {
                 var entries = local.keys().reduce(function (result, key) {
                     var entry = local.get(key);
-                    entry = 
+                    entry =
                         CryptoJS.AES.decrypt(entry, options.master)
                         .toString(CryptoJS.enc.Utf8);
 
@@ -49,7 +50,7 @@
                     options.success.apply(this, [entries]);
                 }
             }
-        }
+        };
 
         return methods[method].apply(this, [model, options]);
     };
@@ -92,22 +93,36 @@
     });
 
     missword.View = Backbone.View.extend({
+        events: {
+            'click .add-button': 'onAddButtonClick'
+        },
+
         initialize: function (settings) {
             this.entryTemplate = settings.entryTemplate;
+            this.template = _.template(settings.template.html());
             this.container = settings.container;
 
             this.entries = new Entries({master: settings.master});
             this.listenTo(this.entries, 'add', this.onEntryAdded);
-            this.entries.fetch();
         },
 
         render: function () {
-            $(this.container).html(this.el);
+            this.$el.html(this.template());
+            this.entries.fetch();
         },
 
         onEntryAdded: function (entry) {
             var view = new EntryView({model: entry, template: _.template(this.entryTemplate.html())});
-            this.$el.append(view.render().el);
+            this.$el.find('.entries').append(view.render().el);
+        },
+
+        onAddButtonClick: function () {
+            var data = this.$el.find('.new-entry input').serializeArray();
+            data = data.reduce(function (result, el) {
+                result[el.name] = el.value;
+                return result;
+            }, {});
+            this.entries.create(data);
         }
     });
 

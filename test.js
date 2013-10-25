@@ -7,7 +7,8 @@
         var m = new Missword({
             view: {
                 master: 'master-password',
-                container: $(window.document.body),
+                el: '#missword-container',
+                template: $('#missword-template'),
                 entryTemplate: $('#url-pass-template')
             }
         });
