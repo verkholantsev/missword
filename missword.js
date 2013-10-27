@@ -84,7 +84,8 @@
 
     var EntryView = Backbone.View.extend({
         events: {
-            'click .delete-button': 'onDeleteButtonClick'
+            'click .delete-button': 'onDeleteButtonClick',
+            'click .arror': 'onArrowClick'
         },
 
         initialize: function (settings) {
@@ -100,6 +101,15 @@
 
         onDeleteButtonClick: function () {
             this.model.destroy();
+        },
+
+        onArrowClick: function (e) {
+            var target = e.target;
+            if ($(target).hasClass('right')) {
+                this.$el.addClass('pass-view');
+            } else {
+                this.$el.removeClass('pass-view');
+            }
         }
     });
 
