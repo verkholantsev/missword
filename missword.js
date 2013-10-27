@@ -7,10 +7,24 @@
 
     missword.Local = function () {
         this.storage = window.localStorage;
+        var keys = this.keys();
+        if (keys.length > 0) {
+            this.id = Math.max.apply(undefined, keys.map(function (key) {
+                return Number(key);
+            }));
+        } else {
+            this.id = 0;
+        }
     };
 
-    missword.Local.prototype.add = function (hash, url) {
-        this.storage.setItem(url, hash);
+    missword.Local.prototype.add = function (hash) {
+        var id = this.getId();
+        this.storage.setItem(id, hash);
+        return id;
+    };
+
+    missword.Local.prototype.remove = function (id) {
+        this.storage.removeItem(id);
     };
 
     missword.Local.prototype.get = function (url) {
@@ -21,49 +35,71 @@
         return Object.keys(window.localStorage);
     };
 
+    missword.Local.prototype.getId = function () {
+        this.id++;
+        return this.id;
+    };
+
     var local = new missword.Local();
 
     Backbone.sync = function (method, model, options) {
         var methods = {
-            'create': function (model, options) {
-                var key = CryptoJS.AES.encrypt(model.get('url'), options.master).toString(),
-                    value = CryptoJS.AES.encrypt(JSON.stringify(model), options.master).toString();
+                'create': function (model, options) {
+                    var value = CryptoJS.AES.encrypt(JSON.stringify(model), options.master).toString();
 
-                local.add(value, key);
+                    var id = local.add(value);
 
-                if (options.success) {
-                    options.success.apply(this);
+                    if (options.success) {
+                        options.success.apply(this, [{id: id}]);
+                    }
+                },
+                'read': function (model, options) {
+                    var entries = local.keys().reduce(function (result, key) {
+                        var entry = local.get(key);
+                        entry =
+                            CryptoJS.AES.decrypt(entry, options.master)
+                            .toString(CryptoJS.enc.Utf8);
+                        entry = JSON.parse(entry);
+                        entry.id = entry.id || Number(key);
+
+                        result.push(entry);
+                        return result;
+                    }, []);
+
+                    if (options.success) {
+                        options.success.apply(this, [entries]);
+                    }
+                },
+                'delete': function (model, options) {
+                    local.remove(model.get('id'));
+
+                    if (options.success) {
+                        options.success.apply(this, []);
+                    }
                 }
-            },
-            'read': function (model, options) {
-                var entries = local.keys().reduce(function (result, key) {
-                    var entry = local.get(key);
-                    entry =
-                        CryptoJS.AES.decrypt(entry, options.master)
-                        .toString(CryptoJS.enc.Utf8);
-
-                    result.push(JSON.parse(entry));
-                    return result;
-                }, []);
-
-                if (options.success) {
-                    options.success.apply(this, [entries]);
-                }
-            }
-        };
+            };
 
         return methods[method].apply(this, [model, options]);
     };
 
     var EntryView = Backbone.View.extend({
+        events: {
+            'click .delete-button': 'onDeleteButtonClick'
+        },
+
         initialize: function (settings) {
             this.template = settings.template;
             this.listenTo(this.model, 'change', this.render);
+            this.listenTo(this.model, 'destroy', this.remove);
         },
 
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
+        },
+
+        onDeleteButtonClick: function () {
+            this.model.destroy();
         }
     });
 
