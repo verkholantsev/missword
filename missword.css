@@ -101,10 +101,15 @@ input {
     right: 0;
 }
 
-.missword-container {
+.container {
     padding: 1em;
     max-width: 800px;
     margin: auto;
     margin-top: .5em;
     background-color: white;
+}
+
+.logo {
+    margin-bottom: .5em;
+    font-size: 2em;
 }
