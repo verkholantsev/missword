@@ -23,6 +23,10 @@ input {
     cursor: pointer;
 }
 
+.master.wrong {
+    box-shadow: 0 0 1px 2px lightCoral;
+}
+
 .entry {
     white-space: nowrap;
     position: relative;
@@ -49,12 +53,14 @@ input {
 }
 
 .label,
-.add.button {
+.add.button,
+.ok.button {
     font-size: .75em;
     color: #999;
 }
 
-.add.button {
+.add.button,
+.ok.button {
     color: white;
     background-color: #ccc;
     padding: .1em .5em;
@@ -95,45 +101,6 @@ input {
     right: 0;
 }
 
-/*.arror-wrapper {
-    font-size: .5em;
-    background: #ccc;
-    width: 1.5em;
-    height: 1.5em;
-    border-radius: 1em;
-    vertical-align: middle;
-}
-
-.arror-wrapper:hover,
-.delete-button-wrapper:hover {
-    background-color: #999;
-}
-
-.arror {
-    margin-top: -.05em;
-    color: white;
-    padding: .25em;
-    text-align: center;
-}
-
-.delete-button-wrapper {
-    position: absolute;
-    right: 0;
-    font-size: .5em;
-    background: #ccc;
-    width: 1.5em;
-    height: 1.5em;
-    top: .5em;
-    border-radius: 1em;
-}
-
-.delete-button {
-    margin-top: -.05em;
-    color: white;
-    padding: .25em;
-    text-align: center;
-}
-*/
 .missword-container {
     padding: 1em;
     max-width: 800px;

@@ -29,19 +29,29 @@
             </div>
         </div>
     </script>
+
     <script type="text/template" id="missword-template">
-        <div class="entries">
+        <div class="master-state">
+            <div class="master-input">
+                <div class="label">Master</div>
+                <input class="master input" type="password">
+            </div>
+            <div class="inline ok button">Ok</div>
         </div>
-        <div class="new-entry">
-            <div class="url-input">
-                <div class="label">Key</div>
-                <input type="text" name="url">
+        <div class="entries-state">
+            <div class="entries">
             </div>
-            <div class="pass-input">
-                <div class="label">Password</div>
-                <input type="text" name="pass">
+            <div class="new-entry">
+                <div class="url-input">
+                    <div class="label">Key</div>
+                    <input type="text" name="url">
+                </div>
+                <div class="pass-input">
+                    <div class="label">Password</div>
+                    <input type="password" name="pass">
+                </div>
+                <div class="inline add button">Add</div>
             </div>
-            <div class="inline add button">Add</div>
         </div>
     </script>
 </body>

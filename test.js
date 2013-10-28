@@ -6,7 +6,7 @@
     window.onload = function () {
         var m = new Missword({
             view: {
-                master: 'master-password',
+                // master: 'master-password',
                 el: '.missword-container',
                 template: $('#missword-template'),
                 entryTemplate: $('#url-pass-template')

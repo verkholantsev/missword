@@ -36,7 +36,7 @@
     };
 
     missword.Local.prototype.getId = function () {
-        this.id++;
+        this.id += 1;
         return this.id;
     };
 
@@ -54,17 +54,25 @@
                     }
                 },
                 'read': function (model, options) {
-                    var entries = local.keys().reduce(function (result, key) {
-                        var entry = local.get(key);
-                        entry =
-                            CryptoJS.AES.decrypt(entry, options.master)
-                            .toString(CryptoJS.enc.Utf8);
-                        entry = JSON.parse(entry);
-                        entry.id = entry.id || Number(key);
+                    var entries;
 
-                        result.push(entry);
-                        return result;
-                    }, []);
+                    try {
+                        entries = local.keys().reduce(function (result, key) {
+                            var entry = local.get(key);
+                            entry =
+                                CryptoJS.AES.decrypt(entry, options.master)
+                                .toString(CryptoJS.enc.Utf8);
+                            entry = JSON.parse(entry);
+                            entry.id = entry.id || Number(key);
+                            result.push(entry);
+                            return result;
+                        }, []);
+                    } catch (e) {
+                        if (options.error) {
+                            options.error.apply(this);
+                            return;
+                        }
+                    }
 
                     if (options.success) {
                         options.success.apply(this, [entries]);
@@ -81,6 +89,38 @@
 
         return methods[method].apply(this, [model, options]);
     };
+
+    var Entry = Backbone.Model.extend({
+        defaults: {
+            url: '',
+            pass: ''
+        }
+    });
+
+    var Entries = Backbone.Collection.extend({
+        model: Entry,
+
+        initialize: function (settings) {
+            this.master = settings.master;
+        },
+
+        create: function (model, options) {
+            options = _.defaults(options || {}, {master: this.master});
+            return Backbone.Collection.prototype.create.apply(this, [model, options]);
+        },
+
+        fetch: function (options) {
+            options = _.defaults(options || {}, {master: this.master});
+            return Backbone.Collection.prototype.fetch.apply(this, [options]);
+        }
+    });
+
+    var Model = Backbone.Model.extend({
+        defaults: {
+            master: '',
+            state: 'master'
+        }
+    });
 
     var EntryView = Backbone.View.extend({
         events: {
@@ -113,34 +153,10 @@
         }
     });
 
-    var Entry = Backbone.Model.extend({
-        defaults: {
-            url: '',
-            pass: ''
-        }
-    });
-
-    var Entries = Backbone.Collection.extend({
-        model: Entry,
-
-        initialize: function (settings) {
-            this.master = settings.master;
-        },
-
-        create: function (model, options) {
-            options = _.defaults(options || {}, {master: this.master});
-            return Backbone.Collection.prototype.create.apply(this, [model, options]);
-        },
-
-        fetch: function (options) {
-            options = _.defaults(options || {}, {master: this.master});
-            return Backbone.Collection.prototype.fetch.apply(this, [options]);
-        }
-    });
-
     missword.View = Backbone.View.extend({
         events: {
-            'click .add.button': 'onAddButtonClick'
+            'click .add.button': 'onAddButtonClick',
+            'click .ok.button': 'onMasterOk'
         },
 
         initialize: function (settings) {
@@ -148,18 +164,46 @@
             this.template = _.template(settings.template.html());
             this.container = settings.container;
 
+            this.model = new Model();
             this.entries = new Entries({master: settings.master});
+
+            this.listenTo(this.model, 'change:state', this.render);
+            this.listenTo(this.model, 'change:master', function () {
+                this.entries.master = this.model.get('master');
+            });
+
             this.listenTo(this.entries, 'add', this.onEntryAdded);
+            this.listenTo(this.entries, 'error', this.onError);
         },
 
         render: function () {
             this.$el.html(this.template());
-            this.entries.fetch();
+
+            var state = this.model.get('state');
+            if (state === 'master') {
+                this.$el.find('.entries-state').hide();
+                this.$el.find('.master').show();
+            } else if (state === 'entries') {
+                this.$el.find('.entries-state').show();
+                this.$el.find('.master-state').hide();
+
+                this.entries.fetch();
+            }
         },
 
         onEntryAdded: function (entry) {
             var view = new EntryView({model: entry, template: _.template(this.entryTemplate.html())});
             this.$el.find('.entries').append(view.render().el);
+        },
+
+        onError: function () {
+            this.model.set({state: 'master'});
+            this.$el.find('.master-input input').addClass('wrong');
+        },
+
+        onMasterOk: function () {
+            this.model.set({master: this.$el.find('.master-input input').val()});
+            this.model.set({state: 'entries'});
         },
 
         onAddButtonClick: function () {
