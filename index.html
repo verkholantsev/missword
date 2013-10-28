@@ -1,44 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<script type="text/javascript" src="build/missword.js"></script>
-	<script type="text/javascript" src="test.js"></script>
-	<link rel="stylesheet" type="text/css" href="missword.css" />
-	<title>missword</title>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="build/missword.js"></script>
+    <script type="text/javascript" src="test.js"></script>
+    <link rel="stylesheet" type="text/css" href="missword.css" />
+    <title>missword</title>
 </head>
 <body>
-	<div class="missword-container"></div>
+    <div class="missword-container"></div>
 
-	<script type="text/template" id="url-pass-template">
-		<div class="entry">
-			<div class="entry-field url-field inline">
-				<div class="inline"><%= url %></div>
-				<div class="arror-wrapper button inline"><div class="arror right">&rarr;</div></div>
-			</div>
-			<div class="entry-field pass-field inline">
-				<div class="arror-wrapper button inline"><div class="arror left">&larr;</div></div>
-				<div class="inline"><%= pass %></div>
-			</div>
-			<div class="delete-button-wrapper button inline">
-				<div class="delete-button">&times;</div>
-			</div>
-		</div>
-	</script>
-	<script type="text/template" id="missword-template">
-		<div class="entries">
-		</div>
-		<div class="new-entry">
-			<div class="url-input">
-				<div class="label">Key</div>
-				<input type="text" name="url">
-			</div>
-			<div class="pass-input">
-				<div class="label">Password</div>
-				<input type="text" name="pass">
-			</div>
-			<div class="inline add-button button">Add</div>
-		</div>
-	</script>
+    <script type="text/template" id="url-pass-template">
+        <div class="entry">
+            <div class="entry-field url-field inline">
+                <div class="inline"><%= url %></div>
+                <div class="icon button inline">
+                    <div class="arror right">&rarr;</div>
+                </div>
+            </div>
+            <div class="entry-field pass-field inline">
+                <div class="icon button inline">
+                    <div class="arror left">&larr;</div>
+                </div>
+                <div class="inline"><%= pass %></div>
+            </div>
+            <div class="delete icon button inline">
+                <div class="delete">&times;</div>
+            </div>
+        </div>
+    </script>
+    <script type="text/template" id="missword-template">
+        <div class="entries">
+        </div>
+        <div class="new-entry">
+            <div class="url-input">
+                <div class="label">Key</div>
+                <input type="text" name="url">
+            </div>
+            <div class="pass-input">
+                <div class="label">Password</div>
+                <input type="text" name="pass">
+            </div>
+            <div class="inline add button">Add</div>
+        </div>
+    </script>
 </body>
 </html>

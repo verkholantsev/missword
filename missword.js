@@ -84,7 +84,7 @@
 
     var EntryView = Backbone.View.extend({
         events: {
-            'click .delete-button': 'onDeleteButtonClick',
+            'click .delete': 'onDeleteButtonClick',
             'click .arror': 'onArrowClick'
         },
 
@@ -140,7 +140,7 @@
 
     missword.View = Backbone.View.extend({
         events: {
-            'click .add-button': 'onAddButtonClick'
+            'click .add.button': 'onAddButtonClick'
         },
 
         initialize: function (settings) {
@@ -163,12 +163,15 @@
         },
 
         onAddButtonClick: function () {
-            var data = this.$el.find('.new-entry input').serializeArray();
+            var inputs = this.$el.find('.new-entry input'),
+                data = inputs.serializeArray();
+
             data = data.reduce(function (result, el) {
                 result[el.name] = el.value;
                 return result;
             }, {});
             this.entries.create(data);
+            inputs.val('');
         }
     });
 

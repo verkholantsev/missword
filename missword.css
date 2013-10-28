@@ -1,122 +1,143 @@
 html, body {
-	padding: 0;
-	margin: 0;
+    padding: 0;
+    margin: 0;
 }
 
 body {
-	font-family: sans-serif;
-	font-size: 18pt;
-	background-color: #eee;
+    font-family: sans-serif;
+    font-size: 18pt;
+    background-color: #eee;
 }
 
 input {
-	font-family: sans-serif;
-	font-size: 18pt;	
+    font-family: sans-serif;
+    font-size: 18pt;    
 }
 
 .inline {
-	display: inline-block;
-	vertical-align: middle;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .button {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 .entry {
-	white-space: nowrap;
-	position: relative;
-	margin-bottom: .5em;
-	overflow: hidden;
-	border-bottom: 1px solid #ccc;
+    white-space: nowrap;
+    position: relative;
+    margin-bottom: .5em;
+    overflow: hidden;
+    border-bottom: 1px solid #ccc;
 }
 
 .url-field {
-	-webkit-transition: margin-left .5s ease;
-	   -moz-transition: margin-left .5s ease;
-	    -ms-transition: margin-left .5s ease;
-	     -o-transition: margin-left .5s ease;
-	        transition: margin-left .5s ease;
+    -webkit-transition: margin-left .5s ease;
+       -moz-transition: margin-left .5s ease;
+        -ms-transition: margin-left .5s ease;
+         -o-transition: margin-left .5s ease;
+            transition: margin-left .5s ease;
 }
 
 .pass-view .url-field {
-	-webkit-transition: margin-left .5s ease;
-	   -moz-transition: margin-left .5s ease;
-	    -ms-transition: margin-left .5s ease;
-	     -o-transition: margin-left .5s ease;
-	        transition: margin-left .5s ease;
-	margin-left: -100%;
+    -webkit-transition: margin-left .5s ease;
+       -moz-transition: margin-left .5s ease;
+        -ms-transition: margin-left .5s ease;
+         -o-transition: margin-left .5s ease;
+            transition: margin-left .5s ease;
+    margin-left: -100%;
 }
 
 .label,
-.add-button {
-	font-size: .75em;
-	/*font-weight: bold;*/
-	color: #999;
+.add.button {
+    font-size: .75em;
+    color: #999;
 }
 
-.add-button {
-	color: white;
-	background-color: #ccc;
-	padding: .1em .5em;
-	border-radius: 1em;
+.add.button {
+    color: white;
+    background-color: #ccc;
+    padding: .1em .5em;
+    border-radius: 1em;
 }
 
-.add-button:hover {
-	background-color: #999;
+.add.button:hover {
+    background-color: #999;
 }
 
 .pass-field {
-	margin-left: -.25em;
+    margin-left: -.25em;
 }
 
 .entry-field {
-	width: 100%;
+    width: 100%;
 }
 
-.arror-wrapper {
-	font-size: .5em;
-	background: #ccc;
-	width: 1.5em;
-	height: 1.5em;
-	border-radius: 1em;
-	vertical-align: middle;
+.icon.button {
+    text-align: center;
+    line-height: 1.5em;
+    color: white;
+    background-color: #ccc;
+    font-size: .5em;
+    border-radius: .75em;
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.icon.button:hover {
+    background-color: #999;
+}
+
+.delete.button {
+    position: absolute;
+    top: 50%;
+    margin-top: -.75em;
+    right: 0;
+}
+
+/*.arror-wrapper {
+    font-size: .5em;
+    background: #ccc;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 1em;
+    vertical-align: middle;
 }
 
 .arror-wrapper:hover,
 .delete-button-wrapper:hover {
-	background-color: #999;
+    background-color: #999;
 }
 
 .arror {
-	margin-top: -.05em;
-	color: white;
-	padding: .25em;
-	text-align: center;
+    margin-top: -.05em;
+    color: white;
+    padding: .25em;
+    text-align: center;
 }
 
 .delete-button-wrapper {
-	position: absolute;
-	right: 0;
-	font-size: .5em;
-	background: #ccc;
-	width: 1.5em;
-	height: 1.5em;
-	top: .5em;
-	border-radius: 1em;
+    position: absolute;
+    right: 0;
+    font-size: .5em;
+    background: #ccc;
+    width: 1.5em;
+    height: 1.5em;
+    top: .5em;
+    border-radius: 1em;
 }
 
 .delete-button {
-	margin-top: -.05em;
-	color: white;
-	padding: .25em;
-	text-align: center;
+    margin-top: -.05em;
+    color: white;
+    padding: .25em;
+    text-align: center;
 }
-
+*/
 .missword-container {
-	padding: 1em;
-	max-width: 800px;
-	margin: auto;
-	margin-top: .5em;
-	background-color: white;
+    padding: 1em;
+    max-width: 800px;
+    margin: auto;
+    margin-top: .5em;
+    background-color: white;
 }
